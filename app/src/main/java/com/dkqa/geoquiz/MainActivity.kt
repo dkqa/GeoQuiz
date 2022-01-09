@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private var currentIndex = 0
 
+    private var completedQuestions = mutableMapOf<Int, Boolean>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
@@ -39,16 +41,21 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById(R.id.question_text_view)
 
         trueButton.setOnClickListener { view: View ->
-            checkAnswer(true)
+            completedQuestions[currentIndex] = checkAnswer(true)
+            answerButtonsSetEnabled(false)
+            checkCompletedAll()
         }
 
         falseButton.setOnClickListener { view: View ->
-            checkAnswer(false)
+            completedQuestions[currentIndex] = checkAnswer(false)
+            answerButtonsSetEnabled(false)
+            checkCompletedAll()
         }
 
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
+            checkCompletedQuestions(currentIndex)
         }
 
         updateQuestion()
@@ -84,15 +91,41 @@ class MainActivity : AppCompatActivity() {
         questionTextView.setText(questionTextViewResId)
     }
 
-    private fun checkAnswer(userAnswer: Boolean) {
+    private fun checkAnswer(userAnswer: Boolean): Boolean {
         val correctAnswer = questionBank[currentIndex].answer
+        val result: Boolean
 
         val messageResId = if (userAnswer == correctAnswer) {
+            result = true
             R.string.correct_toast
         } else {
+            result = false
             R.string.incorrect_toast
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+        return result
+    }
+
+    private fun answerButtonsSetEnabled(enabled: Boolean) {
+        falseButton.isEnabled = enabled
+        trueButton.isEnabled = enabled
+    }
+
+    private fun checkCompletedQuestions(index: Int) {
+        if (index in completedQuestions.keys) {
+            answerButtonsSetEnabled(false)
+        } else {
+            answerButtonsSetEnabled(true)
+        }
+    }
+
+    private fun checkCompletedAll() {
+        if (completedQuestions.size == questionBank.size) {
+            nextButton.isEnabled = false
+            val correctCount = completedQuestions.filter { it.value }.size
+            val correctPercent = correctCount / (completedQuestions.size.toDouble() / 100)
+            questionTextView.text = "Correct $correctPercent%"
+        }
     }
 }

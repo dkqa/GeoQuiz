@@ -72,7 +72,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (requestCode == REQUEST_CODE_CHEAT) {
-            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            if (data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) == true) {
+                quizViewModel.setQuestionCheat()
+            }
         }
     }
 

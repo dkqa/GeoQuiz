@@ -8,7 +8,8 @@ private const val TAG = "QuizViewModel"
 class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
-    var isCheater = false
+    val isCheater: Boolean
+        get() = questionBank[currentIndex] in questionCheats
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -19,6 +20,8 @@ class QuizViewModel : ViewModel() {
         Question(R.string.question_asia, true)
     )
 
+    private var questionCheats = mutableSetOf<Question>()
+
     val currentQuestionAnswer: Boolean
         get() = questionBank[currentIndex].answer
 
@@ -27,5 +30,9 @@ class QuizViewModel : ViewModel() {
 
     fun moveToNext() {
         currentIndex = (currentIndex + 1) % questionBank.size
+    }
+
+    fun setQuestionCheat() {
+        questionCheats.add(questionBank[currentIndex])
     }
 }

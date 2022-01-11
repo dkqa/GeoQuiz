@@ -1,6 +1,5 @@
 package com.dkqa.geoquiz
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 
 private const val TAG = "QuizViewModel"
@@ -9,6 +8,8 @@ class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
     var isCheater = false
+    var cheatsCount = 3
+        private set
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -28,4 +29,9 @@ class QuizViewModel : ViewModel() {
     fun moveToNext() {
         currentIndex = (currentIndex + 1) % questionBank.size
     }
+
+    fun minusCheat() {
+        cheatsCount--
+    }
+
 }

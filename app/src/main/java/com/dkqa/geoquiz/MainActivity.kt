@@ -11,8 +11,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 
 private const val TAG = "MainActivity"
@@ -62,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         cheatButton.setOnClickListener { view ->
             val answerIsTrue = quizViewModel.currentQuestionAnswer
-            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue, quizViewModel.cheatsCount)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val options =  ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
                 startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
@@ -83,6 +81,9 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_CODE_CHEAT) {
             quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            if (quizViewModel.isCheater) {
+                quizViewModel.minusCheat()
+            }
         }
     }
 
